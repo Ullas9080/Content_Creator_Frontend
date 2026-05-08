@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import AuthHydrator from "@/components/auth/AuthHydrator";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,7 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col bg-[#0f111a] text-slate-50">
-        {children}
+        <AuthHydrator>
+          {children}
+        </AuthHydrator>
       </body>
     </html>
   );

@@ -10,6 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { revenueData } from '@/lib/dummy-data';
+import { useDashboardStore } from '@/store/useDashboardStore';
 
 // Custom tooltip to fix recharts TypeScript error
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -29,42 +31,23 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function RevenueChart() {
-  const [data, setData] = useState([]);
+  const revenueEntries = useDashboardStore((state) => state.revenueEntries);
+  const [data, setData] = useState(
+    revenueData.map((e) => ({ name: e.month, total: e.total }))
+  );
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const fetchRevenue = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:5000/graphql', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token ? `Bearer ${token}` : '',
-          },
-          body: JSON.stringify({
-            query: `
-              query {
-                revenueEntries {
-                  month
-                  total
-                }
-              }
-            `
-          })
-        });
-        const json = await res.json();
-        if (json.data?.revenueEntries) {
-          setData(json.data.revenueEntries.map((e: any) => ({
-            name: e.month,
-            total: e.total
-          })));
-        }
-      } catch (err) {
-        console.error('Failed to fetch revenue data', err);
-      }
-    };
-    fetchRevenue();
-  }, []);
+    if (revenueEntries.length > 0) {
+      setData(
+        revenueEntries.map((entry) => ({
+          name: entry.month,
+          total: Number(entry.total),
+        })),
+      );
+    }
+    setMounted(true);
+  }, [revenueEntries]);
 
   return (
     <div className="glass-panel p-6 rounded-2xl flex flex-col">
@@ -79,8 +62,9 @@ export default function RevenueChart() {
         </select>
       </div>
       <div className="h-64 w-full flex-1 min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <RechartsLineChart data={data.length > 0 ? data : []}>
+        {mounted && (
+          <ResponsiveContainer width="100%" height="100%">
+          <RechartsLineChart data={data}>
             <defs>
               <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8}/>
@@ -112,8 +96,11 @@ export default function RevenueChart() {
               fill="url(#colorTotal)" 
             />
           </RechartsLineChart>
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );
 }
+
+

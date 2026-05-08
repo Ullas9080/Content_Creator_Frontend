@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import DashboardLayout from '@/components/dashboard/layout/DashboardLayout';
 import { aiSuggestions, audienceInsights } from '@/lib/dummy-data';
 import { Brain, Lightbulb, Target, Flame, BarChart2, Users, TrendingUp, Clock, RotateCw, PenTool, CalendarPlus, ChevronRight } from 'lucide-react';
 

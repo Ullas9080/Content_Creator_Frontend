@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import DashboardLayout from '@/components/dashboard/layout/DashboardLayout';
 import { deals, paymentSummary, revenueData } from '@/lib/dummy-data';
 import RevenueChart from '@/components/dashboard/RevenueChart';
 import { Wallet, CircleDollarSign, Clock, Check, X, TrendingUp, Mail, FileText, ChevronRight } from 'lucide-react';

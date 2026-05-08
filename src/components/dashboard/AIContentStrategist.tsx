@@ -1,7 +1,9 @@
 "use client";
+import { API_BASE_URL } from '@/config/api';
 
 import React, { useEffect, useState } from 'react';
 import { Brain, Lightbulb, Target, PlaySquare, Flame, PenTool, CalendarPlus, RotateCw } from 'lucide-react';
+import { aiSuggestions } from '@/lib/dummy-data';
 
 export default function AIContentStrategist() {
   const [idea, setIdea] = useState<any>(null);
@@ -10,12 +12,10 @@ export default function AIContentStrategist() {
   const fetchIdea = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/graphql', {
+      const res = await fetch(`${API_BASE_URL}/graphql`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : '',
         },
         body: JSON.stringify({
           query: `
@@ -34,11 +34,16 @@ export default function AIContentStrategist() {
       });
       const json = await res.json();
       if (json.data?.contentIdeas?.length > 0) {
-        // Just show the first one for now
-        setIdea(json.data.contentIdeas[0]);
+        // Pick a random idea to show
+        const ideas = json.data.contentIdeas;
+        setIdea(ideas[Math.floor(Math.random() * ideas.length)]);
+      } else {
+        // Fallback to dummy data
+        setIdea(aiSuggestions[Math.floor(Math.random() * aiSuggestions.length)]);
       }
     } catch (err) {
-      console.error('Failed to fetch AI ideas', err);
+      console.warn('Using dummy AI ideas — backend not reachable', err);
+      setIdea(aiSuggestions[Math.floor(Math.random() * aiSuggestions.length)]);
     } finally {
       setLoading(false);
     }
@@ -104,3 +109,5 @@ export default function AIContentStrategist() {
     </div>
   );
 }
+
+

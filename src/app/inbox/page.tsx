@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import DashboardLayout from '@/components/dashboard/layout/DashboardLayout';
 import { inboxMessages } from '@/lib/dummy-data';
 import { MessageSquare, Mail, Tag, Check, Trash2, Archive, Filter, Search } from 'lucide-react';
 import { FaYoutube, FaInstagram, FaTwitter } from 'react-icons/fa';

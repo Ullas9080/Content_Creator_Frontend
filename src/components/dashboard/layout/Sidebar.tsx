@@ -3,22 +3,25 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
 import { 
   LayoutDashboard, Sparkles, BarChart3, 
-  Wallet, MessageSquare, Users, Settings, Handshake
+  Wallet, MessageSquare, Users, Settings, Mic
 } from 'lucide-react';
 
 const navItems = [
-  { href: '/',          label: 'Dashboard',     icon: LayoutDashboard },
-  { href: '/ai-brain',  label: 'AI Brain',       icon: Sparkles,   badge: 'Live' },
-  { href: '/analytics', label: 'Analytics',      icon: BarChart3 },
-  { href: '/inbox',     label: 'Unified Inbox',  icon: MessageSquare, badge: '4' },
-  { href: '/fans',      label: 'Fan CRM',        icon: Users },
-  { href: '/business',  label: 'Business',       icon: Wallet, badge: '2' },
+  { href: '/',              label: 'Dashboard',     icon: LayoutDashboard },
+  { href: '/ai-brain',      label: 'AI Brain',       icon: Sparkles,   badge: 'Live' },
+  { href: '/transcription', label: 'Transcription',  icon: Mic,        badge: 'New' },
+  { href: '/analytics',     label: 'Analytics',      icon: BarChart3 },
+  { href: '/inbox',         label: 'Unified Inbox',  icon: MessageSquare, badge: '4' },
+  { href: '/fans',          label: 'Fan CRM',        icon: Users },
+  { href: '/business',      label: 'Business',       icon: Wallet, badge: '2' },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuthStore();
 
   return (
     <aside className="w-64 glass-panel border-r border-dark-700 hidden md:flex flex-col justify-between z-20 relative flex-shrink-0">
@@ -55,6 +58,8 @@ export default function Sidebar() {
                   <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                     badge === 'Live'
                       ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30 animate-pulse'
+                      : badge === 'New'
+                      ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30'
                       : 'bg-purple-600 text-white'
                   }`}>
                     {badge}
@@ -74,9 +79,13 @@ export default function Sidebar() {
         </Link>
         {/* User pill */}
         <div className="flex items-center gap-3 mt-4 px-2">
-          <img src="https://i.pravatar.cc/150?img=32" alt="Profile" className="w-9 h-9 rounded-full border-2 border-purple-500 object-cover flex-shrink-0" />
+          <img 
+            src={user?.photo || "https://i.pravatar.cc/150?img=32"} 
+            alt="Profile" 
+            className="w-9 h-9 rounded-full border-2 border-purple-500 object-cover flex-shrink-0" 
+          />
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-white truncate">Alex Morgan</p>
+            <p className="text-sm font-semibold text-white truncate">{user?.displayName || 'Guest'}</p>
             <p className="text-xs text-gray-500 truncate">Pro Creator</p>
           </div>
         </div>

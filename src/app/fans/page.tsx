@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import DashboardLayout from '@/components/dashboard/layout/DashboardLayout';
 import { topFans, fanSegments, audienceInsights } from '@/lib/dummy-data';
 import { Users, Star, TrendingUp, MessageSquare, Heart } from 'lucide-react';
 import { FaYoutube, FaInstagram, FaTwitter } from 'react-icons/fa';

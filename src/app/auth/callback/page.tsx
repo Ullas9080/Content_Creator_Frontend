@@ -2,20 +2,37 @@
 
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
+import { authToken } from '@/lib/auth-token';
 
 function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const loginWithToken = useAuthStore((state) => state.loginWithToken);
+  const fetchMe = useAuthStore((state) => state.fetchMe);
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      localStorage.setItem('token', token);
-      router.push('/');
-    } else {
-      router.push('/login');
-    }
-  }, [router, searchParams]);
+    const handle = async () => {
+      const token = searchParams.get('token');
+      try {
+        if (token) {
+          await loginWithToken(token);
+        } else {
+          // Cookie-based OAuth callback path.
+          const fallbackToken = authToken.get();
+          if (fallbackToken) {
+            await fetchMe();
+          } else {
+            await fetchMe();
+          }
+        }
+        router.replace('/');
+      } catch {
+        router.replace('/login');
+      }
+    };
+    handle();
+  }, [router, searchParams, loginWithToken, fetchMe]);
 
   return (
     <div className="flex items-center justify-center h-screen bg-dark-900 text-white">

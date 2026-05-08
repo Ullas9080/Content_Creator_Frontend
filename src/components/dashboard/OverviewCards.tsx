@@ -1,47 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Users, CircleDollarSign, Handshake, Heart, TrendingUp } from 'lucide-react';
+import { kpis } from '@/lib/dummy-data';
+import { useDashboardStore } from '@/store/useDashboardStore';
 
 export default function OverviewCards() {
-  const [stats, setStats] = useState({
-    totalAudience: '...',
-    pendingRevenue: '...',
-    activeCollabs: '...',
-    avgEngagement: '...',
-  });
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:5000/graphql', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token ? `Bearer ${token}` : '',
-          },
-          body: JSON.stringify({
-            query: `
-              query {
-                dashboardStats {
-                  totalAudience
-                  pendingRevenue
-                  activeCollabs
-                  avgEngagement
-                }
-              }
-            `
-          })
-        });
-        const { data } = await res.json();
-        if (data?.dashboardStats) {
-          setStats(data.dashboardStats);
-        }
-      } catch (err) {
-        console.error('Failed to fetch stats', err);
-      }
-    };
-    fetchStats();
-  }, []);
+  const stats = useDashboardStore((state) => state.stats);
+  const view = {
+    totalAudience: stats?.youtubeSubscribers || kpis.totalAudience,
+    pendingRevenue: stats ? `$${stats.totalRevenue.toLocaleString()}` : kpis.pendingRevenue,
+    activeCollabs: String(stats?.activeBrandDeals ?? kpis.activeCollabs),
+    avgEngagement: kpis.avgEngagement,
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -50,7 +19,7 @@ export default function OverviewCards() {
         <div className="flex justify-between items-start mb-4">
           <div>
             <p className="text-gray-400 text-sm font-medium">Total Audience</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{stats.totalAudience}</h3>
+            <h3 className="text-2xl font-bold text-white mt-1">{view.totalAudience}</h3>
           </div>
           <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
             <Users size={20} />
@@ -68,7 +37,7 @@ export default function OverviewCards() {
         <div className="flex justify-between items-start mb-4">
           <div>
             <p className="text-gray-400 text-sm font-medium">Pending Revenue</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{stats.pendingRevenue}</h3>
+            <h3 className="text-2xl font-bold text-white mt-1">{view.pendingRevenue}</h3>
           </div>
           <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
             <CircleDollarSign size={20} />
@@ -85,7 +54,7 @@ export default function OverviewCards() {
         <div className="flex justify-between items-start mb-4">
           <div>
             <p className="text-gray-400 text-sm font-medium">Active Collabs</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{stats.activeCollabs}</h3>
+            <h3 className="text-2xl font-bold text-white mt-1">{view.activeCollabs}</h3>
           </div>
           <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-400">
             <Handshake size={20} />
@@ -102,7 +71,7 @@ export default function OverviewCards() {
         <div className="flex justify-between items-start mb-4">
           <div>
             <p className="text-gray-400 text-sm font-medium">Avg. Engagement</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{stats.avgEngagement}</h3>
+            <h3 className="text-2xl font-bold text-white mt-1">{view.avgEngagement}</h3>
           </div>
           <div className="w-10 h-10 rounded-full bg-pink-500/10 flex items-center justify-center text-pink-400">
             <Heart size={20} />
@@ -117,3 +86,4 @@ export default function OverviewCards() {
     </div>
   );
 }
+

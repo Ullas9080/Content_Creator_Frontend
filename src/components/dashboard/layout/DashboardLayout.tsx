@@ -1,17 +1,29 @@
-import React, { useEffect } from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/layout/Sidebar';
-import Header from '@/components/layout/Header';
+import Sidebar from '@/components/dashboard/layout/Sidebar';
+import Header from '@/components/dashboard/layout/Header';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const { isAuthenticated, hydrated, isLoading } = useAuthStore();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
+    if (hydrated && !isLoading && !isAuthenticated) {
+      router.replace('/login');
     }
-  }, [router]);
+  }, [hydrated, isLoading, isAuthenticated, router]);
+
+  if (!hydrated || isLoading || !isAuthenticated) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-dark-900 text-white">
+        <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-dark-900 text-slate-50 selection:bg-purple-600/40 selection:text-white font-sans">
       <Sidebar />
